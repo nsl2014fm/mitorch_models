@@ -66,6 +66,7 @@ class MnasFPN(Head):
 
     def forward(self, input):
         base_features = self.get_base_features(input)
-        base_features += self.conv0(base_features[-1]) # Create scale==6.
+        base_features += [self.conv0(base_features[-1])] # Create scale==6.
+        assert len(base_features) == 4
 
         return self.basic_blocks(base_features)
