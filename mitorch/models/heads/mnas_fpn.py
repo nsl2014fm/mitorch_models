@@ -17,6 +17,7 @@ class MnasFPN(Head):
             assert len(in_scales) == 2
             assert all(s in [3, 4, 5, 6] for s in in_scales)
             assert out_scale in [3, 4, 5, 6]
+            self.in_scales = in_scales
             self.conv_in0 = torch.nn.Conv2d(in_channels, feature_channels, kernel_size=1)
             self.conv_in1 = torch.nn.Conv2d(in_channels, feature_channels, kernel_size=1)
             self.conv0 = torch.nn.Conv2d(feature_channels, feature_channels, kernel_size, padding=kernel_size//2, groups=feature_channels)
@@ -24,8 +25,8 @@ class MnasFPN(Head):
             self.relu = torch.nn.ReLU(inplace=True)
 
         def forward(self, in0, in1, out_shape):
-            in0 = self._size_dependent_ordering(in0, self.conv_in0, in_scales[0], out_scale, out_shape)
-            in1 = self._size_dependent_ordering(in1, self.conv_in1, in_scales[1], out_scale, out_shape)
+            in0 = self._size_dependent_ordering(in0, self.conv_in0, self.in_scales[0], out_scale, out_shape)
+            in1 = self._size_dependent_ordering(in1, self.conv_in1, self.in_scales[1], out_scale, out_shape)
             return self.conv1(self.conv0(self.relu(in0 + in1)))
 
         @staticmethod
